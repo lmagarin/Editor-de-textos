@@ -15,10 +15,15 @@ import java.awt.event.InputEvent;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class PrincipalGUI extends JFrame {
 
 	private JPanel contentPane;
+	private JTextArea textArea;
 
 	/**
 	 * Launch the application.
@@ -40,72 +45,116 @@ public class PrincipalGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public PrincipalGUI() {
-		setTitle("Sin t\u00EDtulo: Bloc de notas");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				Gestion.salir();
+			}
+		});
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
-		JMenu mnNewMenu = new JMenu("Archivo");
-		mnNewMenu.setMnemonic('A');
-		menuBar.add(mnNewMenu);
-		
+
+		JMenu mnArchivo = new JMenu("Archivo");
+		mnArchivo.setMnemonic('A');
+		menuBar.add(mnArchivo);
+
 		JMenuItem mntmNewMenuItem = new JMenuItem("Nuevo");
-		mnNewMenu.add(mntmNewMenuItem);
-		
+		mntmNewMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Gestion.nuevo();
+			}
+		});
+		mnArchivo.add(mntmNewMenuItem);
+
 		JMenuItem mntmAbrir = new JMenuItem("Abrir...");
-		mnNewMenu.add(mntmAbrir);
-		
+		mntmAbrir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Gestion.abrir();
+			}
+		});
+		mnArchivo.add(mntmAbrir);
+
 		JMenuItem mntmGuardar = new JMenuItem("Guardar");
-		mnNewMenu.add(mntmGuardar);
-		
+		mntmGuardar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Gestion.guardar();
+			}
+		});
+		mnArchivo.add(mntmGuardar);
+
 		JMenuItem mntmGuardarComo = new JMenuItem("Guardar como...");
-		mnNewMenu.add(mntmGuardarComo);
-		
+		mntmGuardarComo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Gestion.guardarComo();
+			}
+		});
+		mnArchivo.add(mntmGuardarComo);
+
 		JSeparator separator = new JSeparator();
-		mnNewMenu.add(separator);
-		
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Salir");
-		mnNewMenu.add(mntmNewMenuItem_1);
-		
+		mnArchivo.add(separator);
+
+		JMenuItem mntmSalir = new JMenuItem("Salir");
+		mntmSalir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Gestion.salir();
+			}
+		});
+		mnArchivo.add(mntmSalir);
+
 		JMenu mnEditar = new JMenu("Edici\u00F3n");
 		mnEditar.setMnemonic('E');
 		menuBar.add(mnEditar);
-		
+
 		JMenuItem mntmCortar = new JMenuItem("Cortar");
-		mntmCortar.setEnabled(false);
-		mntmCortar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+		mntmCortar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+				InputEvent.CTRL_MASK));
 		mnEditar.add(mntmCortar);
-		
-		JMenuItem mntmD = new JMenuItem("Copiar");
-		mntmD.setEnabled(false);
-		mntmD.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
-		mnEditar.add(mntmD);
-		
+
+		JMenuItem mntmCopiar = new JMenuItem("Copiar");
+		mntmCopiar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+				InputEvent.CTRL_MASK));
+		mnEditar.add(mntmCopiar);
+
 		JMenuItem mntmPegar = new JMenuItem("Pegar");
-		mntmPegar.setEnabled(false);
-		mntmPegar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+		mntmPegar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+				InputEvent.CTRL_MASK));
 		mnEditar.add(mntmPegar);
-		
+
 		JSeparator separator_1 = new JSeparator();
 		mnEditar.add(separator_1);
-		
+
 		JMenuItem mntmBuscar = new JMenuItem("Buscar");
-		mntmBuscar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_MASK));
+		mntmBuscar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+				InputEvent.CTRL_MASK));
 		mnEditar.add(mntmBuscar);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
-		
-		JTextArea textArea = new JTextArea();
-		textArea.setWrapStyleWord(true);
-		textArea.setLineWrap(true);
-		scrollPane.setViewportView(textArea);
+
+		setTextArea(new JTextArea());
+		getTextArea().setWrapStyleWord(true);
+		getTextArea().setLineWrap(true);
+		scrollPane.setViewportView(getTextArea());
+		Gestion.setPrincipalGUI(this);
+		Gestion.resetear(null);
 	}
 
+	public JTextArea getTextArea() {
+		return textArea;
+	}
+
+	/**
+	 * @param textArea
+	 *            the textArea to set
+	 */
+	private void setTextArea(JTextArea textArea) {
+		this.textArea = textArea;
+	}
 }
