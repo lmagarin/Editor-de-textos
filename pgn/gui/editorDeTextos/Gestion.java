@@ -39,14 +39,15 @@ public class Gestion {
 	 *            donde se muestra el documento de texto recién abierto
 	 */
 	static void abrir() {
-		guardarSiModificado();
-
-		switch (jFileChooser.showOpenDialog(null)) {
-		case JFileChooser.CANCEL_OPTION:
-		case JFileChooser.ERROR_OPTION:
+		if (guardarSiModificado() == ContinuarAbortar.ABORTAR)
 			return;
-		}
-
+		
+		switch (jFileChooser.showOpenDialog(principalGUI)) {
+				case JFileChooser.CANCEL_OPTION:
+				case JFileChooser.ERROR_OPTION:
+					return;
+				}
+		
 		File file = jFileChooser.getSelectedFile();
 		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(
 				file))) {
@@ -55,37 +56,64 @@ public class Gestion {
 			resetear(file);
 
 		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(null, "Fichero no encontrado",
-					"Error", JOptionPane.ERROR_MESSAGE, null);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Error de E/S", "Error",
+			JOptionPane.showMessageDialog(principalGUI,
+					"Fichero no encontrado", "Error",
 					JOptionPane.ERROR_MESSAGE, null);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(principalGUI, "Error de E/S",
+					"Error", JOptionPane.ERROR_MESSAGE, null);
 		}
 
 	}
 
 	/**
-	 * Guarda si se ha modificado el contenido del editor
+	 * Pregunta al usuario si guardar al ser modificado el contenido del editor.
 	 * 
-	 * @return true si no se cancela la acción. false en otro caso
+	 * @return true si se continúa la acción. false en otro caso (cancelar o
+	 *         cerrar)
 	 * 
 	 */
-	static boolean guardarSiModificado() {
-		// TODO
-		return true;
+	static ContinuarAbortar guardarSiModificado() {
+		if (isModificado()) {
+			switch (JOptionPane.showConfirmDialog(principalGUI,
+					"¿Desea guardar los cambios hechos a " + getNombre() + "?",
+					"Editor de textos", JOptionPane.YES_NO_CANCEL_OPTION)) {
+			case JOptionPane.YES_OPTION:
+				guardar();
+				break;
+			case JOptionPane.NO_OPTION:
+				break;
+			default:
+				return ContinuarAbortar.ABORTAR;// case
+												// JOptionPane.CANCEL_OPTION
+												// case
+			}
+		}
+		return ContinuarAbortar.CONTINUAR;
+	}
+
+	/**
+	 * Obtiene el nombre del fichero
+	 * 
+	 * @return Nombre del fichero. Sin t\u00EDtulo si no hay fichero asociado.
+	 */
+	private static String getNombre() {
+		if (file == null)
+			return "Sin t\u00EDtulo ";
+		return file.getName();
 	}
 
 	static void salir() {
-		if (guardarSiModificado()) {
-			principalGUI.setVisible(false);
-			principalGUI.dispose();
-			System.exit(0);
-		}
+		if (guardarSiModificado() == ContinuarAbortar.ABORTAR)
+			return;
 
+		principalGUI.setVisible(false);
+		principalGUI.dispose();
+		System.exit(0);
 	}
 
 	static void guardarComo() {
-		switch (jFileChooser.showSaveDialog(null)) {
+		switch (jFileChooser.showSaveDialog(principalGUI)) {
 		case JFileChooser.CANCEL_OPTION:
 		case JFileChooser.ERROR_OPTION:
 			return;
@@ -107,17 +135,17 @@ public class Gestion {
 			resetear(file);
 
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Error de E/S", "Error",
-					JOptionPane.ERROR_MESSAGE, null);
+			JOptionPane.showMessageDialog(principalGUI, "Error de E/S",
+					"Error", JOptionPane.ERROR_MESSAGE, null);
 		}
 	}
 
 	static void nuevo() {
-		if (guardarSiModificado()) {
-			principalGUI.getTextArea().setText(null);
-			resetear(null);
-		}
+		if (guardarSiModificado() == ContinuarAbortar.ABORTAR)
+			return;
 
+		principalGUI.getTextArea().setText(null);
+		resetear(null);
 	}
 
 	static void setPrincipalGUI(PrincipalGUI principalGUI) {
@@ -126,9 +154,13 @@ public class Gestion {
 	}
 
 	/**
-	 * Restablece los valores del editor de textos. Altera los valores: <li>
-	 * modificado para no perder la información <li>fichero para asociar el
-	 * documento al fichero <li>título del editor
+	 * Restablece los valores del editor de textos. Altera los valores:
+	 * 
+	 * <li>modificado para no perder la información
+	 * 
+	 * <li>fichero para asociar el documento al fichero
+	 * 
+	 * <li>título del editor
 	 * 
 	 * @param file
 	 */
@@ -136,10 +168,10 @@ public class Gestion {
 		setModificado(false);
 		setFile(file);
 
-		if (file == null)
-			principalGUI.setTitle("Sin t\u00EDtulo: Bloc de notas");
-		else
-			principalGUI.setTitle(file.getName() + ": Bloc de notas");
+		// if (file == null)
+		// principalGUI.setTitle("Sin t\u00EDtulo: Bloc de notas");
+		// else
+		principalGUI.setTitle(getNombre() + ": Bloc de notas");
 	}
 
 	private static void setFile(File file) {

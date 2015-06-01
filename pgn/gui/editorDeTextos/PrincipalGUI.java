@@ -6,15 +6,20 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
+
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -142,6 +147,13 @@ public class PrincipalGUI extends JFrame {
 		getTextArea().setWrapStyleWord(true);
 		getTextArea().setLineWrap(true);
 		scrollPane.setViewportView(getTextArea());
+		getTextArea().getDocument().addUndoableEditListener(new UndoableEditListener() {
+			
+			@Override
+			public void undoableEditHappened(UndoableEditEvent arg0) {
+				Gestion.setModificado(true);
+			}
+		});
 		Gestion.setPrincipalGUI(this);
 		Gestion.resetear(null);
 	}
