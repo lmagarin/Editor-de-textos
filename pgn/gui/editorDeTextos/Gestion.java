@@ -41,13 +41,13 @@ public class Gestion {
 	static void abrir() {
 		if (guardarSiModificado() == ContinuarAbortar.ABORTAR)
 			return;
-		
+
 		switch (jFileChooser.showOpenDialog(principalGUI)) {
-				case JFileChooser.CANCEL_OPTION:
-				case JFileChooser.ERROR_OPTION:
-					return;
-				}
-		
+		case JFileChooser.CANCEL_OPTION:
+		case JFileChooser.ERROR_OPTION:
+			return;
+		}
+
 		File file = jFileChooser.getSelectedFile();
 		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(
 				file))) {
@@ -113,12 +113,40 @@ public class Gestion {
 	}
 
 	static void guardarComo() {
-		switch (jFileChooser.showSaveDialog(principalGUI)) {
-		case JFileChooser.CANCEL_OPTION:
-		case JFileChooser.ERROR_OPTION:
-			return;
+		do {
+			switch (jFileChooser.showSaveDialog(principalGUI)) {
+			case JFileChooser.CANCEL_OPTION:
+			case JFileChooser.ERROR_OPTION:
+				return;
+			}
+			if (deseaReemplazarlo(jFileChooser.getSelectedFile())) {
+				guardar(jFileChooser.getSelectedFile());
+				return;
+			}
+		} while (true);
+	}
+
+	/**
+	 * Indica si se desea reemplazar el fichero existente.
+	 * 
+	 * @param file
+	 *            Fichero que va a reemplazarse
+	 * @return true si se desea reemplazar. false en otro caso
+	 */
+	private static boolean deseaReemplazarlo(File file) {
+		if (file.exists()) {
+			switch (JOptionPane.showConfirmDialog(principalGUI, file.getName()
+					+ " ya existe. ¿Desea reemplazarlo?",
+					"Confirmar Guardar Como", JOptionPane.YES_NO_OPTION)) {
+			case JOptionPane.YES_OPTION:
+				return true;
+			case JOptionPane.NO_OPTION:
+			case JOptionPane.CLOSED_OPTION:
+				return false;
+			}
 		}
-		guardar(jFileChooser.getSelectedFile());
+
+		return false;
 	}
 
 	static void guardar() {
@@ -167,10 +195,6 @@ public class Gestion {
 	static void resetear(File file) {
 		setModificado(false);
 		setFile(file);
-
-		// if (file == null)
-		// principalGUI.setTitle("Sin t\u00EDtulo: Bloc de notas");
-		// else
 		principalGUI.setTitle(getNombre() + ": Bloc de notas");
 	}
 
