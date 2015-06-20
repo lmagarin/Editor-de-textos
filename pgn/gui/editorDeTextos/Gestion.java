@@ -18,8 +18,8 @@ public class Gestion {
 	static JFileChooser jFileChooser = new JFileChooser();
 	private static PrincipalGUI principalGUI;
 	/**
-	 * Indica si el texto está modificado. Facilita el guardar el texto previo a
-	 * su pérdida.
+	 * Indica si el texto estÃ¡ modificado. Facilita el guardar el texto previo a
+	 * su pÃ©rdida.
 	 */
 	private static boolean modificado;
 	/**
@@ -34,9 +34,7 @@ public class Gestion {
 
 	/**
 	 * Abre un documento de texto
-	 * 
-	 * @param jTextArea
-	 *            donde se muestra el documento de texto recién abierto
+	 *
 	 */
 	static void abrir() {
 		if (guardarSiModificado() == ContinuarAbortar.ABORTAR)
@@ -69,14 +67,14 @@ public class Gestion {
 	/**
 	 * Pregunta al usuario si guardar al ser modificado el contenido del editor.
 	 * 
-	 * @return true si se continúa la acción. false en otro caso (cancelar o
+	 * @return true si se continÃºa la acciÃ³n. false en otro caso (cancelar o
 	 *         cerrar)
 	 * 
 	 */
 	static ContinuarAbortar guardarSiModificado() {
 		if (isModificado()) {
 			switch (JOptionPane.showConfirmDialog(principalGUI,
-					"¿Desea guardar los cambios hechos a " + getNombre() + "?",
+					"Â¿Desea guardar los cambios hechos a " + getNombre() + "?",
 					"Editor de textos", JOptionPane.YES_NO_CANCEL_OPTION)) {
 			case JOptionPane.YES_OPTION:
 				guardar();
@@ -136,7 +134,7 @@ public class Gestion {
 	private static boolean deseaReemplazarlo(File file) {
 		if (file.exists()) {
 			switch (JOptionPane.showConfirmDialog(principalGUI, file.getName()
-					+ " ya existe. ¿Desea reemplazarlo?",
+					+ " ya existe. Â¿Desea reemplazarlo?",
 					"Confirmar Guardar Como", JOptionPane.YES_NO_OPTION)) {
 			case JOptionPane.YES_OPTION:
 				return true;
@@ -184,11 +182,11 @@ public class Gestion {
 	/**
 	 * Restablece los valores del editor de textos. Altera los valores:
 	 * 
-	 * <li>modificado para no perder la información
+	 * <li>modificado para no perder la informaciÃ³n
 	 * 
 	 * <li>fichero para asociar el documento al fichero
 	 * 
-	 * <li>título del editor
+	 * <li>tÃ­tulo del editor
 	 * 
 	 * @param file
 	 */
