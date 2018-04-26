@@ -1,5 +1,8 @@
 package pgn.gui.editorDeTextos;
 
+/**Comentario hecho por Araceli 
+/**Para hacerle un commit
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
